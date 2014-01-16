@@ -1,5 +1,5 @@
 /* general style */
-body    { font: 17px 'Palatino', 'Palatino Linotype', 'Georgia', serif;
+body    { font: 16px 'Palatino', 'Palatino Linotype', 'Georgia', serif;
           margin: 0; padding: 0; background: url(tweed.png); }
 a       { /*color: #432165;*/ color: #234764; }
 a:hover { color: #3b185f; background: #f2edd5; }
@@ -27,9 +27,8 @@ div.navigation a            { text-decoration: none;
                               padding: 10px;
                             }
 
-div.separator               { border-bottom: 1px dotted #ddd; padding-bottom: 42px;
-                              margin-bottom: 42px; font-size: 16px; color: #000000;
-                              text-align: center;}
+div.separator               { border-bottom: 1px dotted #fbebb3; padding-bottom: 42px;
+                              margin-bottom: 42px; font-size: 16px; text-align: center;}
 div.header					{ height: 25px; margin-bottom: 42px; }
 div.navigation  			{ height: 25px; margin-bottom: 42px; }
 div.navigation ul           { margin: 0; padding: 0; list-style: none; }
@@ -37,7 +36,7 @@ div.navigation ul li        { display: inline; margin: 0 2px; padding: 0; }
 div.navigation a:hover 		{ color: #14130f; background: #ffde8c; }
 div.body                    { clear: both; }
 div.disqus					{ margin: 0px 20px 0px 20px; }
-div.footer                  { border-top: 1px dotted #ddd; padding-top: 9px;
+div.footer                  { border-top: 1px dotted #fbebb3; padding-top: 9px;
                               margin-top: 42px; font-size: 16px; color: #888;
                               text-align: center; }
 div.footer a                { color: #888; }
@@ -55,7 +54,7 @@ dt                              { margin: 25px 0 16px 0; padding: 0; }
 dd                              { margin: 16px 0 25px 40px; padding: 0; }
 ul ol, ol ul, ul ul, ol ol      { margin: 10px 0; padding: 0 0 0 40px; }
 li                              { padding: 0; }
-h1 + p.date                     { margin-top: -20px; font-style: italic; }
+h2 + p.date                     { margin-top: -20px; font-style: italic; }
 							  
 /* code formatting.  no monospace because of webkit (bug?) */
 pre, code, tt   { font-family: 'Consolas', 'Deja Vu Sans Mono',
@@ -118,9 +117,9 @@ ul.tagcloud     { font-size: 16px; margin: 36px 0; padding: 0;
                   list-style: none; }
 ul.tagcloud li  { margin: 0; padding: 0 10px; display: inline; }
 li.tag-1           {font-size: 100.0%; }
-li.tag-2           {font-size: 130.0%; }
-li.tag-3           {font-size: 160.0%; }
-li.tag-4           {font-size: 200.0%; }
+li.tag-2           {font-size: 100.0%; }
+li.tag-3           {font-size: 100.0%; }
+li.tag-4           {font-size: 100.0%; }
 
 /* latex math */
 span.math img   { margin-bottom: -7px; }
