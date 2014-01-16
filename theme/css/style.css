@@ -28,7 +28,7 @@ div.navigation a            { text-decoration: none;
                             }
 
 div.separator               { border-bottom: 1px dotted #ddd; padding-bottom: 42px;
-                              margin-bottom: 42px; font-size: 16px; color: #888;
+                              margin-bottom: 42px; font-size: 16px; color: #000000;
                               text-align: center;}
 div.header					{ height: 25px; margin-bottom: 42px; }
 div.navigation  			{ height: 25px; margin-bottom: 42px; }
@@ -36,6 +36,7 @@ div.navigation ul           { margin: 0; padding: 0; list-style: none; }
 div.navigation ul li        { display: inline; margin: 0 2px; padding: 0; }
 div.navigation a:hover 		{ color: #14130f; background: #ffde8c; }
 div.body                    { clear: both; }
+div.disqus					{ margin: 0px 20px 0px 20px; }
 div.footer                  { border-top: 1px dotted #ddd; padding-top: 9px;
                               margin-top: 42px; font-size: 16px; color: #888;
                               text-align: center; }
