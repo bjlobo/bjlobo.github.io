@@ -4,7 +4,7 @@
     <link href='http://fonts.googleapis.com/css?family=Noticia+Text:400,700' rel='stylesheet' type='text/css' />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title> Boxplots in Pandas | Pennington </title>
+    <title> Box plots in Pandas | Pennington </title>
 
     <link rel="stylesheet" href="/theme/css/style.css" type="text/css" />
     <link rel="stylesheet" href="/theme/css/pygments.css" type="text/css" />
@@ -24,10 +24,10 @@
       </div>
       <div class=separator></div>        
         <div class=body>
-    <h2 class="title"> Boxplots in Pandas</h2>
+    <h2 class="title"> Box plots in Pandas</h2>
     <p class=date> Sat 18 January 2014 </p>
     <p><strong>Objective</strong>:  A single plot with box plots of multiple data sets side by side.</p>
-<p>I recently wanted to plot each of several groups of data (stored in a single column in my data frame) as a single plot with the boxplots corresponding to each group of data lined up side by side.  </p>
+<p>I recently wanted to plot each of several groups of data (stored in a single column in my data frame) as a single plot with the box plots corresponding to each group of data lined up side by side.  </p>
 <p>Pandas provides for this with the <code>pandas.DataFrame.boxplot()</code> method and use of the <code>column</code> and <code>by</code> arguments, which can be used to form the desired groups (assuming that the data frame contains only the groups you want displayed on the plot). </p>
 <p>However, before coming across this functionality I produced the same plot using the following method, which requires a little more work but allows for greater flexibility (e.g. not plotting all the groups present in the data frame).</p>
 <div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
@@ -54,7 +54,7 @@
 </pre></div>
 
 
-<p>There are 24 groups, and the code <code>df.boxplot(column= ['data_two'], by= ['lbl_one', 'lbl_two', 'lbl_three'])</code> would produce a plot with 24 different box plots side by side.  However, what if you only wanted a subset of those boxplots, and plotted in a particular order?</p>
+<p>There are 24 groups, and the code <code>df.boxplot(column= ['data_two'], by= ['lbl_one', 'lbl_two', 'lbl_three'])</code> would produce a plot with 24 different box plots side by side.  However, what if you only wanted a subset of those box plots, and plotted in a particular order?</p>
 <p>First generate a list of labels of the groups you do want plotted. The pandas <code>SeriesGroupBy</code> object can be used to obtain a list of all 24 group labels,</p>
 <div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">group_labels</span><span class="o">=</span> <span class="p">[</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">groups</span> <span class="ow">in</span> <span class="n">grpd_data_two</span><span class="p">]</span>
 </pre></div>
@@ -75,13 +75,13 @@
 
 
 <p><img alt="Custom box plot" src="/images/cust_bplot.png" title="Custom box plot" style="width: 700px;" /></p>
-<p>Hope this was helpful, let me know if you know of better ways to plot with Pandas!</p>
+<p>Hope this was helpful, let me know if you know of better ways to produce box plots with Pandas!</p>
     
     <p class=tags>tags:
       <a class=tags href="/tag/python.html">python</a>
       <a class=tags href="/tag/pandas.html">pandas</a>
       <a class=tags href="/tag/groupby.html">groupby</a>
-      <a class=tags href="/tag/boxplot.html">boxplot</a>
+      <a class=tags href="/tag/box-plot.html">box plot</a>
       <a class=tags href="/tag/dataframe.html">DataFrame</a>
     </p>
     <div class=disqus id="disqus_thread"></div>
