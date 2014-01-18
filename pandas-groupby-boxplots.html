@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Noticia+Text:400,700' rel='stylesheet' type='text/css' />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title> Boxplots in Pandas | Pennington </title>
+
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="/theme/css/font-awesome.css" type="text/css"/>
+  </head>
+  <body>
+    <div class=container>
+      <div class=header>
+		<h2 class=head>Pennington</h2>
+	  </div>
+	  <div class=navigation>
+        <ul>
+            <li><a href="/index.html">Blog</a> </li>
+            <li><a href="/archives.html">Archive</a> </li>
+            <li><a href="/tags.html">Tags</a> </li>
+        </ul>
+      </div>
+      <div class=separator></div>        
+        <div class=body>
+    <h2 class="title"> Boxplots in Pandas</h2>
+    <p class=date> Sat 18 January 2014 </p>
+    <p><strong>Objective</strong>:  A single plot with box plots of multiple data sets side by side.</p>
+<p>I recently wanted to plot each of several groups of data (stored in a single column in my data frame) as a single plot with the boxplots corresponding to each group of data lined up side by side.  </p>
+<p>Pandas provides for this with the <code>pandas.DataFrame.boxplot()</code> method and use of the <code>column</code> and <code>by</code> arguments, which can be used to form the desired groups (assuming that the data frame contains only the groups you want displayed on the plot). </p>
+<p>However, before coming across this functionality I produced the same plot using the following method, which requires a little more work but allows for greater flexibility (e.g. not plotting all the groups present in the data frame).</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">n</span><span class="o">=</span> <span class="mi">10000</span>
+
+<span class="c"># Generate group labels</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">grp_one</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">grp_two</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">grp_three</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span> 
+
+<span class="c"># Generate two columns of data points</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data_one</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data_two</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">37</span><span class="p">,</span> <span class="mi">137</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+<span class="c"># Create the data frame</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span><span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;lbl_one&#39;</span><span class="p">:</span> <span class="n">grp_one</span><span class="p">,</span> <span class="s">&#39;lbl_two&#39;</span><span class="p">:</span> <span class="n">grp_two</span><span class="p">,</span> <span class="s">&#39;lbl_three&#39;</span><span class="p">:</span> <span class="n">grp_three</span><span class="p">,</span>
+                        <span class="s">&#39;data_one&#39;</span><span class="p">:</span> <span class="n">data_one</span><span class="p">,</span> <span class="s">&#39;data_two&#39;</span><span class="p">:</span> <span class="n">data_two</span><span class="p">})</span>
+
+<span class="c"># Group the second column of data using all three labels</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">grpd_data_two</span><span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span> <span class="p">[</span><span class="s">&#39;lbl_one&#39;</span><span class="p">,</span> <span class="s">&#39;lbl_two&#39;</span><span class="p">,</span> <span class="s">&#39;lbl_three&#39;</span><span class="p">])[</span><span class="s">&#39;data_two&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>There are 24 groups, and the code <code>df.boxplot(column= ['data_two'], by= ['lbl_one', 'lbl_two', 'lbl_three'])</code> would produce a plot with 24 different box plots side by side.  However, what if you only wanted a subset of those boxplots, and plotted in a particular order?</p>
+<p>First generate a list of labels of the groups you do want plotted. The pandas <code>SeriesGroupBy</code> object can be used to obtain a list of all 24 group labels,</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">group_labels</span><span class="o">=</span> <span class="p">[</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">groups</span> <span class="ow">in</span> <span class="n">grpd_data_two</span><span class="p">]</span>
+</pre></div>
+
+
+<p>or a custom ordered list of labels can be defined,</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">group_labels</span><span class="o">=</span> <span class="p">[(</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>First use the list of labels and a list comprehension to place the group data into the form required by the <code>plt.boxplot()</code> method, then deal with the labels for each box plot:</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">boxplot</span><span class="p">([</span><span class="n">grpd_data_two</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="n">group_labels</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">locs</span><span class="p">,</span> <span class="n">__</span><span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">locs</span><span class="p">,</span> <span class="n">group_labels</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="Custom box plot" src="/images/cust_bplot.png" title="Custom box plot" style="width: 700px;" /></p>
+<p>Hope this was helpful, let me know if you know of better ways to plot with Pandas!</p>
+    
+    <p class=tags>tags:
+      <a class=tags href="/tag/python.html">python</a>
+      <a class=tags href="/tag/pandas.html">pandas</a>
+      <a class=tags href="/tag/groupby.html">groupby</a>
+      <a class=tags href="/tag/boxplot.html">boxplot</a>
+      <a class=tags href="/tag/dataframe.html">DataFrame</a>
+    </p>
+    <div class=disqus id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'bjlobogithubio'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+        </div>
+        
+<div class=footer>
+  <p>&copy; Copyright <script language="JavaScript">var date = new Date(); document.write(date.getFullYear());</script> by Ben Lobo</p>
+  <p> Powered by <a href="http://pypi.python.org/pypi/pelican/" target="_blank">Pelican</a>.  
+    Modified version of <a href="https://github.com/fjavieralba/flasky">theme</a> by <a href="http://fjavieralba.com">fjavieralba</a>
+  </p> 
+  <p>
+    <div class=social style="font-size: 27px;">
+      <ul>
+        <script language="JavaScript">
+          u = 'bjlobo';
+          s = 'gmail.com';
+          document.write('<a href=\"mailto:' + u + '@' + s + '\" target=\"_self\">');
+        </script>
+            <li><i class="icon-envelope icon-large"></i> </li>
+        </a>
+        <a href="https://github.com/bjlobo" target="_blank"> <li> <i class="icon-github-sign icon-large"></i> </li> </a>
+      </ul>
+    </div>
+  </p>
+</div>    </div>
+  </body>
+</html>

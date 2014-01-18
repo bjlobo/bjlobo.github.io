@@ -13,7 +13,7 @@ h5 a, h6 a                  { text-decoration: none; }
 h1 a:hover, h2 a:hover,
 h3 a:hover, h4 a:hover      { color: #432165; }
 h1.title, h2.title          { width: 740px; }
-h2.head						{ background: #ffde8c; margin-top: -15px; padding: 5px}
+h2.head						{ background: #ffde8c; margin-top: -15px; padding: 9px}
 h1, h2                      { margin: 10px 0 25px 0; }
 h1                          { font-size: 48px; line-height: 52px; }
 h2                          { font-size: 36px; line-height: 40px; }

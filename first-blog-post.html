@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Noticia+Text:400,700' rel='stylesheet' type='text/css' />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title> First blog post | Pennington </title>
+
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="/theme/css/font-awesome.css" type="text/css"/>
+  </head>
+  <body>
+    <div class=container>
+      <div class=header>
+		<h2 class=head>Pennington</h2>
+	  </div>
+	  <div class=navigation>
+        <ul>
+            <li><a href="/index.html">Blog</a> </li>
+            <li><a href="/archives.html">Archive</a> </li>
+            <li><a href="/tags.html">Tags</a> </li>
+        </ul>
+      </div>
+      <div class=separator></div>        
+        <div class=body>
+    <h2 class="title"> First blog post</h2>
+    <p class=date> Fri 10 January 2014 </p>
+    <p>This is my first post.  This blog will hopefully be about things I discover in Python and Pandas.</p>
+<p>Here is some example Python code:</p>
+<div class="highlight"><pre><span class="c">## This script reads in a file containing HSP runs and for each staffing </span>
+<span class="c">## level and due-date range outputs a file containing the non-zero</span>
+<span class="c">## PLB(\thsp) values so that a histogram can be computed.</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="c">##</span>
+
+<span class="k">def</span> <span class="nf">extract_VFBData</span><span class="p">(</span><span class="n">indVals</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;This function extracts the relevant VFB run data from the input line </span>
+<span class="sd">    which has already been split into a indVals a vector of individual values.&#39;&#39;&#39;</span>
+
+    <span class="n">oldVFBCode</span><span class="o">=</span> <span class="bp">True</span>
+    <span class="n">isOpt</span><span class="o">=</span> <span class="bp">True</span>
+    <span class="n">lbLmax</span><span class="p">,</span> <span class="n">vfbLmax</span><span class="p">,</span> <span class="n">tStarLmax</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">199999</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">vfbTime</span><span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c">## Determine if the runs use the old VFB code where \lblmax was being</span>
+    <span class="c">## stored improperly or the new VFB code where it is stored properly</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indVals</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&#39;OptAllocFound&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&#39;TStarIsOpt&#39;</span><span class="p">:</span>
+            <span class="n">oldVFBCode</span><span class="o">=</span> <span class="bp">False</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">oldVFBCode</span><span class="p">:</span>
+        <span class="c"># Extract the necessary values from the line</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indVals</span><span class="p">):</span>
+            <span class="c"># Takes care of the case where allocation \tstar was optimal</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;OptAllocFound&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;0&#39;</span><span class="p">:</span>
+                    <span class="n">isOpt</span><span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;LB(Lmax)&#39;</span><span class="p">:</span>  <span class="c">## This finds VFB(Lmax)</span>
+                <span class="n">vfbLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;MinLBAlloc&#39;</span><span class="p">:</span>  <span class="c">## This finds LB(Lmax)</span>
+                <span class="n">lbLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">tStarLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;EnumerationRunTime&#39;</span><span class="p">:</span>
+                <span class="n">vfbTime</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Extract the necessary values from the line</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indVals</span><span class="p">):</span>
+            <span class="c"># Takes care of the case where allocation \tstar was optimal</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;TStarIsOpt&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;0&#39;</span><span class="p">:</span>
+                    <span class="n">isOpt</span><span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;LB(Lmax)&#39;</span><span class="p">:</span>
+                <span class="n">lbLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>     <span class="c">## LB(Lmax)</span>
+                <span class="n">vfbLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span>    <span class="c">## VF(\tvfb)</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;AllocTStar&#39;</span><span class="p">:</span>             
+                <span class="n">tStarLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>  <span class="c">## VF(\tstar)</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;EnumRunTime&#39;</span><span class="p">:</span>
+                <span class="n">vfbTime</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">isOpt</span><span class="p">,</span> <span class="n">lbLmax</span><span class="p">,</span> <span class="n">tStarLmax</span><span class="p">,</span> <span class="n">vfbLmax</span><span class="p">,</span> <span class="n">vfbTime</span>
+
+
+<span class="k">def</span> <span class="nf">extract_HSP2Data</span><span class="p">(</span><span class="n">indVals</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;This function extracts the relevant HSP2 run data from the input line </span>
+<span class="sd">    which has already been split into a vector of individual values (indVals).</span>
+<span class="sd">    NOTE: The HSP2 data must have been generated by vf_workerAlloc_v2.0&#39;&#39;&#39;</span>
+
+    <span class="n">isOpt</span><span class="o">=</span> <span class="bp">True</span>
+    <span class="n">lbLmax</span><span class="p">,</span> <span class="n">sStratLmax</span><span class="p">,</span> <span class="n">hsp2Lmax</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">199999</span><span class="p">,</span> <span class="mi">0</span>
+
+    <span class="c"># Extract the necessary values from the line</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indVals</span><span class="p">):</span>
+        <span class="c"># Takes care of the case where allocation \tstar was optimal</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;TStarIsOpt&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;1&#39;</span><span class="p">:</span>
+                <span class="n">lbLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">10</span><span class="p">])</span>
+                <span class="c"># hsp2Lmax is the minimum of the Lmax value from the initial</span>
+                <span class="c"># allocation and allocation \tstar</span>
+                <span class="n">hsp2Lmax</span><span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">6</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">11</span><span class="p">]))</span>                    
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;AllocTStar&#39;</span><span class="p">:</span>
+            <span class="n">isOpt</span><span class="o">=</span> <span class="bp">False</span>
+            <span class="n">lbLmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;LNSS_Lmax&#39;</span><span class="p">,</span> <span class="s">&#39;QSS1_Lmax&#39;</span><span class="p">,</span> <span class="s">&#39;QSS2_Lmax&#39;</span><span class="p">]:</span>
+            <span class="c"># Iterate over the Lmax values checking to see if any is</span>
+            <span class="c"># strictly smaller than the current value of sStratLmax</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">2</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">q</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">sStratLmax</span><span class="p">):</span>
+                    <span class="n">hsp2Lmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">q</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s">&#39;ThetaHSP_Lmax&#39;</span><span class="p">:</span>
+            <span class="n">hsp2Lmax</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indVals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c"># Data analysis check to make sure vf_workerAlloc_v2.0 code </span>
+            <span class="c"># is working.</span>
+            <span class="k">if</span> <span class="n">sStratLmax</span> <span class="o">&lt;</span> <span class="n">hsp2Lmax</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;vf_workerAlloc_v2.0 code incorrect&quot;</span>
+
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">isOpt</span><span class="p">,</span> <span class="n">lbLmax</span><span class="p">,</span> <span class="n">hsp2Lmax</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c"># Generate the input and file names</span>
+    <span class="n">vfbFileNames</span><span class="p">,</span> <span class="n">hsp2FileNames</span><span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;1a&#39;</span><span class="p">,):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;asym&#39;</span><span class="p">,</span> <span class="s">&#39;sym&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;60&#39;</span><span class="p">,</span> <span class="s">&#39;70&#39;</span><span class="p">,</span> <span class="s">&#39;80&#39;</span><span class="p">,</span> <span class="s">&#39;90&#39;</span><span class="p">):</span>      
+                <span class="n">vfbFileNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;vfb_&#39;</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39;pct_500reps.txt&#39;</span><span class="p">)</span>
+                <span class="n">hsp2FileNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;hsp2_&#39;</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39;pct_500reps.txt&#39;</span><span class="p">)</span>       
+
+    <span class="n">dataFile</span><span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;jss_data.csv&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;jobs,machs,grps,wrkrs,ddr,rep,bal,tstar_is_opt,lb_lmax,tstar_lmax,vfb_lmax,hsp2_lmax</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">vfbFileNm</span><span class="p">,</span> <span class="n">hsp2FileNm</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">izip</span><span class="p">(</span><span class="n">vfbFileNames</span><span class="p">,</span> <span class="n">hsp2FileNames</span><span class="p">):</span>
+        <span class="n">vfbFile</span><span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;./data/&#39;</span> <span class="o">+</span> <span class="n">vfbFileNm</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">hsp2File</span><span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;./data/&#39;</span> <span class="o">+</span> <span class="n">hsp2FileNm</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+        <span class="k">print</span> <span class="n">vfbFileNm</span><span class="p">,</span> <span class="n">hsp2FileNm</span>
+
+        <span class="k">for</span> <span class="n">vfbLine</span><span class="p">,</span> <span class="n">hsp2Line</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">izip</span><span class="p">(</span><span class="n">vfbFile</span><span class="p">,</span> <span class="n">hsp2File</span><span class="p">):</span>
+            <span class="n">vfbIndVals</span><span class="o">=</span> <span class="n">vfbLine</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">hsp2IndVals</span><span class="o">=</span> <span class="n">hsp2Line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">vfbIndVals</span><span class="p">[</span><span class="mi">15</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10001</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vfbIndVals</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">vfbIndVals</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;SYM,&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;ASYM,&#39;</span><span class="p">)</span>
+
+                <span class="n">vfbLineData</span><span class="o">=</span> <span class="n">extract_VFBData</span><span class="p">(</span><span class="n">vfbIndVals</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vfbLineData</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;T,&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;F,&#39;</span><span class="p">)</span>
+                <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vfbLineData</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vfbLineData</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vfbLineData</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+
+                <span class="n">hsp2LineData</span><span class="o">=</span> <span class="n">extract_HSP2Data</span><span class="p">(</span><span class="n">hsp2IndVals</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vfbLineData</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dataFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">hsp2LineData</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="n">dataFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+    
+    <p class=tags>tags:
+      <a class=tags href="/tag/python.html">python</a>
+      <a class=tags href="/tag/pandas.html">pandas</a>
+      <a class=tags href="/tag/blog.html">blog</a>
+    </p>
+    <div class=disqus id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'bjlobogithubio'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+        </div>
+        
+<div class=footer>
+  <p>&copy; Copyright <script language="JavaScript">var date = new Date(); document.write(date.getFullYear());</script> by Ben Lobo</p>
+  <p> Powered by <a href="http://pypi.python.org/pypi/pelican/" target="_blank">Pelican</a>.  
+    Modified version of <a href="https://github.com/fjavieralba/flasky">theme</a> by <a href="http://fjavieralba.com">fjavieralba</a>
+  </p> 
+  <p>
+    <div class=social style="font-size: 27px;">
+      <ul>
+        <script language="JavaScript">
+          u = 'bjlobo';
+          s = 'gmail.com';
+          document.write('<a href=\"mailto:' + u + '@' + s + '\" target=\"_self\">');
+        </script>
+            <li><i class="icon-envelope icon-large"></i> </li>
+        </a>
+        <a href="https://github.com/bjlobo" target="_blank"> <li> <i class="icon-github-sign icon-large"></i> </li> </a>
+      </ul>
+    </div>
+  </p>
+</div>    </div>
+  </body>
+</html>
